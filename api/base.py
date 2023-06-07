@@ -46,3 +46,6 @@ class AcunetixAPI(AcunetixCoreAPI,
             timed_print('User profile settings have not been changed. Something went wrong.\n'
                         f'Info: {resp.text} Status code: {resp.status_code}. Content: {resp.content}')
             exit(1)
+
+    def reconnect(self):
+        self._login()
