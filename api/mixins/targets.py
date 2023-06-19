@@ -24,7 +24,7 @@ class TargetMixin:
             'criticality': kwargs.get('criticality') or 10  # integer
         }
         data = json.dumps(target_data)
-        request = self._post_request(path='targets', data=data)
+        request = self.post_request(path='targets', data=data)
         if request.status_code != 201:
             timed_print(f'Fail to create target for the address: {address}.\n'
                         f'Info: {request.text} Status code: {request.status_code}. Content: {request.content}'
@@ -36,7 +36,7 @@ class TargetMixin:
         return target
 
     def get_targets(self: "AcunetixAPI") -> list[AcunetixTarget]:
-        response = self._get_request(path='targets')
+        response = self.get_request(path='targets')
         targets = response.json().get('targets', [])
         return [self.parse_target(target_dict=target) for target in targets]
 
@@ -54,4 +54,4 @@ class TargetMixin:
         )
 
     def delete_target(self: "AcunetixAPI", target: AcunetixTarget):
-        self._delete_request(path=f'targets/{target.target_id}')
+        self.delete_request(path=f'targets/{target.target_id}')

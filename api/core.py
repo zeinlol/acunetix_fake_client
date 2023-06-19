@@ -7,6 +7,21 @@ import urllib3
 
 from core.tools import timed_print
 
+def handle_http_errors(status_codes, fixing_function):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            response = func(*args, **kwargs)
+            if response.status_code in status_codes:
+                # Retry the request
+                print(f"Retrying request due to status code: {response.status_code}")
+                fixing_function()
+                response = func(*args, **kwargs)
+            return response
+
+        return wrapper
+
+    return decorator
+
 
 class AcunetixCoreAPI:
 
@@ -32,7 +47,7 @@ class AcunetixCoreAPI:
 
     @property
     def is_logged(self) -> bool:
-        return self._get_request('me').status_code == 200
+        return self.get_request('me').status_code == 200
 
     @property
     def api_url(self) -> str:
@@ -60,7 +75,7 @@ class AcunetixCoreAPI:
 
     def _login(self) -> NoReturn:
         self._update_session(headers=self.headers_json)
-        response = self._post_request(path='me/login', data=self.auth_data)
+        response = self.post_request(path='me/login', data=self.auth_data)
         self._update_session(headers=response.headers, cookies=response.cookies)
 
     def _update_session(self, headers=None, cookies=None) -> NoReturn:
@@ -69,16 +84,16 @@ class AcunetixCoreAPI:
         if cookies:
             self.session.cookies.update(cookies)
 
-    def _get_request(self, path: str) -> requests.Response:
+    def get_request(self, path: str) -> requests.Response:
         return self.session.get(f'{self.api_url}{path}')
 
-    def _post_request(self, path: str, data) -> requests.Response:
+    def post_request(self, path: str, data) -> requests.Response:
         return self.session.post(f'{self.api_url}{path}', data=data)
 
-    def _patch_request(self, path: str, data) -> requests.Response:
+    def patch_request(self, path: str, data) -> requests.Response:
         return self.session.patch(f'{self.api_url}{path}', data=data)
 
-    def _delete_request(self, path: str) -> requests.Response:
+    def delete_request(self, path: str) -> requests.Response:
         return self.session.delete(f'{self.api_url}{path}')
 
     def setup_proxy_configuration(self, target_id: str, host: str, port: int, protocol: str) -> NoReturn:
@@ -101,7 +116,7 @@ class AcunetixCoreAPI:
             }
         }
         data = json.dumps(config_data)
-        resp = self._patch_request(path=f'targets/{target_id}/configuration', data=data)
+        resp = self.patch_request(path=f'targets/{target_id}/configuration', data=data)
         if resp.status_code == 204:
             timed_print('Proxy settings changed successfully.')
         else:
@@ -117,7 +132,7 @@ class AcunetixCoreAPI:
         while True:
             timed_print(f'Trying to connect to the Acunetix service ({self.api_url})... ')
             try:
-                self._get_request('')
+                self.get_request('')
             except requests.exceptions.ConnectionError as e:
                 counter += 1
                 if counter > 10:

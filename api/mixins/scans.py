@@ -12,11 +12,11 @@ class ScanMixin:
 
     def get_scans(self: "AcunetixAPI") -> list[AcunetixScan]:
         """Get all available scans..."""
-        request = self._get_request('scans')
+        request = self.get_request('scans')
         return [self.parse_scan(created_scan=scan) for scan in request.json().get('scans', [])]
 
     def get_scan(self: "AcunetixAPI", scan_id: str) -> AcunetixScan:
-        request = self._get_request(f'scans/{scan_id}')
+        request = self.get_request(f'scans/{scan_id}')
         return self.parse_scan(created_scan=request.json())
 
     @staticmethod
@@ -53,6 +53,6 @@ class ScanMixin:
             }
         }
         data = json.dumps(scan_data)
-        request = self._post_request(path='scans', data=data)
+        request = self.post_request(path='scans', data=data)
         created_scan = request.json()
         return self.parse_scan(created_scan=created_scan)

@@ -20,12 +20,12 @@ class ExportsMixin:
             }
         }
         data = json.dumps(data)
-        export = self._post_request(path='exports', data=data)
+        export = self.post_request(path='exports', data=data)
         # timed_print(export.json())
         return self.parse_export(created_export=export.json())
 
     def get_export(self: "AcunetixAPI", export_id: str) -> AcunetixExportReport:
-        request = self._get_request(f'exports/{export_id}')
+        request = self.get_request(f'exports/{export_id}')
         created_export = request.json()
         return self.parse_export(created_export=created_export)
 

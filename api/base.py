@@ -39,7 +39,7 @@ class AcunetixAPI(AcunetixCoreAPI,
                 }
         }
         data = json.dumps(user_data)
-        resp = self._patch_request(path='me', data=data)
+        resp = self.patch_request(path='me', data=data)
         if resp.status_code == 204:
             timed_print('User profile changed successfully. The current language is: English.')
         else:

@@ -14,7 +14,7 @@ class ReportMixin:
     def get_reports(self: "AcunetixAPI", target_id: str = None) -> list[AcunetixReport]:
         """Get all available reports..."""
         path = 'reports'
-        response = self._get_request(path=path)
+        response = self.get_request(path=path)
         # timed_print(f'Get reports response {response.status_code}')
         reports = [
             self.parse_report(created_report=report)
@@ -33,7 +33,7 @@ class ReportMixin:
         """
 
         timed_print(f'Downloading report {descriptor}')
-        return self._get_request(path=f'reports/download/{descriptor}')
+        return self.get_request(path=f'reports/download/{descriptor}')
 
     def run_scan_report(self: "AcunetixAPI", scan_id: str, template_id: str) -> AcunetixReport:
         data = {
@@ -46,12 +46,12 @@ class ReportMixin:
             }
         }
         data = json.dumps(data)
-        export = self._post_request(path='reports', data=data)
+        export = self.post_request(path='reports', data=data)
         # timed_print(export.json())
         return self.parse_report(created_report=export.json())
 
     def get_report(self: "AcunetixAPI", report_id: str) -> AcunetixReport:
-        request = self._get_request(f'reports/{report_id}')
+        request = self.get_request(f'reports/{report_id}')
         return self.parse_report(created_report=request.json())
 
     @staticmethod
@@ -68,4 +68,4 @@ class ReportMixin:
         )
 
     def delete_report(self: "AcunetixAPI", report: AcunetixReport):
-        self._delete_request(path=f'reports/{report.report_id}')
+        self.delete_request(path=f'reports/{report.report_id}')
