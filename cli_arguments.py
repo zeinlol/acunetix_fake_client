@@ -11,8 +11,6 @@ def init_args():
     parser.add_argument('-px', '--proxy', required=False, type=str, help='Proxy settings')
     parser.add_argument('-sh', '--listen-host', type=str, default='0.0.0.0', help='Listening hosts')
     parser.add_argument('-sp', '--listen-port', type=int, default=3444, help='Listening ports')
-    parser.add_argument('-d', '--demo-mode', type=bool, default=False,
-                        help='Handle no licence limitations. Wait for other scans finished')
     return parser.parse_args()
 
 
