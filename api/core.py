@@ -85,16 +85,36 @@ class AcunetixCoreAPI:
             self.session.cookies.update(cookies)
 
     def get_request(self, path: str) -> requests.Response:
-        return self.session.get(f'{self.api_url}{path}')
+        path = f'{self.api_url}{path}'
+        response = self.session.get(path)
+        if response.status_code in [400, 401]:
+            self._login()
+            response = self.session.get(path)
+        return response
 
     def post_request(self, path: str, data) -> requests.Response:
-        return self.session.post(f'{self.api_url}{path}', data=data)
+        path = f'{self.api_url}{path}'
+        response = self.session.post(path, data=data)
+        if response.status_code in [400, 401]:
+            self._login()
+            response = self.session.post(path, data=data)
+        return response
 
     def patch_request(self, path: str, data) -> requests.Response:
-        return self.session.patch(f'{self.api_url}{path}', data=data)
+        path = f'{self.api_url}{path}'
+        response = self.session.patch(path, data=data)
+        if response.status_code in [400, 401]:
+            self._login()
+            response = self.session.patch(path, data=data)
+        return response
 
     def delete_request(self, path: str) -> requests.Response:
-        return self.session.delete(f'{self.api_url}{path}')
+        path = f'{self.api_url}{path}'
+        response = self.session.delete(path)
+        if response.status_code in [400, 401]:
+            self._login()
+            response = self.session.delete(path)
+        return response
 
     def setup_proxy_configuration(self, target_id: str, host: str, port: int, protocol: str) -> NoReturn:
         """Configures proxy settings for a target.
